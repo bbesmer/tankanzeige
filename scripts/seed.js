@@ -160,6 +160,31 @@ async function seedRevenue(client) {
   }
 }
 
+async function seedFueling(client) {
+  try {
+    // Create the "fueling" table if it doesn't exist
+    const createTable = await client.sql`
+      CREATE TABLE IF NOT EXISTS fueling (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        company VARCHAR(127) NOT NULL,
+        volume NUMERIC(5,2) NOT NULL,
+        price NUMERIC(5,2) NOT NULL,
+        mileage NUMERIC(7,1) NOT NULL,
+        date DATE NOT NULL
+      );
+    `;
+
+    console.log(`Created "fueling" table`);
+
+    return {
+      createTable,
+    };
+  } catch (error) {
+    console.error('Error seeding fueling:', error);
+    throw error;
+  }
+}
+
 async function main() {
   const client = await db.connect();
 
@@ -167,6 +192,7 @@ async function main() {
   await seedCustomers(client);
   await seedInvoices(client);
   await seedRevenue(client);
+  await seedFueling(client);
 
   await client.end();
 }
